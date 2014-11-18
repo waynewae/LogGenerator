@@ -2,7 +2,6 @@
 #include<fstream>
 #include<string>
 #include<cstring>
-#include <conio.h>
 #include "libxl.h"
 
 using namespace std;
