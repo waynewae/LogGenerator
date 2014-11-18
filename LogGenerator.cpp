@@ -25,12 +25,11 @@ int main(int argc, char* argv[])
 	//string BatteryEnd = "20141117_battery_end.txt";
 	//string PMLog = "1415029862018_abnormalNotify@4316001.log";
 
-	//string Date = argv[1];
-	//string SerailTest_xls = argv[2];
-	//string SerailTest_txt = argv[3];
-	//string BatteryStart = argv[4];
-	//string BatteryEnd = argv[5];
-	//string PMLog = argv[6];
+	string SerailTest_xls = argv[1];
+	string SerailTest_txt = argv[2];
+	string BatteryStart = argv[3];
+	string BatteryEnd = argv[4];
+	string PMLog = argv[5];
 
 	fstream WriteToHere;
 	WriteToHere.open("DoU AutoTest report.html", ios::out | ios::trunc);
