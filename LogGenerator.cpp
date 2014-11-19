@@ -17,18 +17,18 @@ int main(int argc, char* argv[])
 	string app_name;
 	string lock_time;
 
-	string Date = "2014/11/17";
-	string SerailTest_xls = "20141117_serial_test_Report.xls";
-	string SerailTest_txt = "20141117_serial_test_Report.txt";
-	string BatteryStart = "20141117_battery_start.txt";
-	string BatteryEnd = "20141117_battery_end.txt";
-	string PMLog = "1415029862018_abnormalNotify@4316001.log";
+//	string Date = "2014/11/17";
+//	string SerailTest_xls = "20141117_serial_test_Report.xls";
+//	string SerailTest_txt = "20141117_serial_test_Report.txt";
+//	string BatteryStart = "20141117_battery_start.txt";
+//	string BatteryEnd = "20141117_battery_end.txt";
+//	string PMLog = "1415029862018_abnormalNotify@4316001.log";
 
-//	string SerailTest_xls = argv[1];
-//	string SerailTest_txt = argv[2];
-//	string BatteryStart = argv[3];
-//	string BatteryEnd = argv[4];
-//	string PMLog = argv[5];
+	string device = argv[1];
+	string SerailTest_xls = argv[2];
+	string SerailTest_txt = argv[3];
+	string BatteryStart = argv[4];
+	string BatteryEnd = argv[5];
 
 	fstream WriteToHere;
 	WriteToHere.open("DoU_AutoTest_report.txt", ios::out | ios::trunc);
@@ -45,7 +45,8 @@ int main(int argc, char* argv[])
 	libxl::Book* book = xlCreateBook();
 	if(book)
 	{
-		WriteToHere << "Information\n";
+		WriteToHere << "Information\n"
+					<< "Device: " << device << endl;
 
 		if(book->load(SerailTest_xls.c_str()))
 		{
@@ -57,19 +58,19 @@ int main(int argc, char* argv[])
 				const char* imei = sheet->readStr(0, 0);
 				WriteToHere << imei;
 				const char* imei_val = sheet->readStr(0, 1);
-				WriteToHere << imei_val << endl;
+				WriteToHere << ' ' << imei_val << endl;
 				const char* pro = sheet->readStr(1, 0);
 				WriteToHere << pro;
 				const char* pro_val = sheet->readStr(1, 1);
-				WriteToHere << pro_val << endl;
+				WriteToHere << ' ' << pro_val << endl;
 				const char* android = sheet->readStr(2, 0);
 				WriteToHere << android;
 				const char* android_val = sheet->readStr(2, 1);
-				WriteToHere << android_val << endl;
+				WriteToHere << ' ' << android_val << endl;
 				const char* SW = sheet->readStr(3, 0);
 				WriteToHere << SW;
 				const char* SW_val = sheet->readStr(3, 1);
-				WriteToHere << SW_val << endl;
+				WriteToHere << ' ' << SW_val << endl;
 				const char* start = sheet->readStr(4, 0);
 			}
 		}
@@ -120,10 +121,10 @@ int main(int argc, char* argv[])
 
 	// write abnormal power consumption
 	WriteToHere << "Abnormal power consumption\n";
-//	if(argv[5])
-	if(!PMLog.empty())
+	if(argv[6])
+//	if(!PMLog.empty())
 	{
-//		string PMLog = argv[5];
+		string PMLog = argv[6];
 		fstream log;
 		log.open(PMLog.c_str(), ios::in);
 		if(!log)	cout << "Open " << PMLog << " failed.\n";
