@@ -2,6 +2,7 @@
 #include<fstream>
 #include<string>
 #include<cstring>
+#include<cstdlib>
 #include "libxl.h"
 
 using namespace std;
@@ -16,6 +17,13 @@ int main(int argc, char* argv[])
 	string lockinfo;
 	string app_name;
 	string lock_time;
+
+	int battery_start = 0;
+	int battery_end = 0;
+	int consumption = 0;
+	int capacity_diff = 0;
+	int capacity_start = 0;
+	int capacity_end = 0;
 
 //	string Date = "2014/11/17";
 //	string SerailTest_xls = "20141117_serial_test_Report.xls";
@@ -86,7 +94,13 @@ int main(int argc, char* argv[])
 
 	WriteToHere << "Battery Status\n"
 				<< "Start,";
-	while(Start.getline(line, sizeof(line), '\n'))	WriteToHere << line << endl;
+	while(Start.getline(line, sizeof(line), '\n'))
+	{
+		WriteToHere << line << endl;
+		tmp.assign(line);
+		if(!tmp.compare(0, tmp.find(','), "Charge now")) battery_start = atoi(tmp.substr(tmp.find(',')+1, tmp.length()).c_str());
+		if(!tmp.compare(0, tmp.find(','), "Capacity")) capacity_start = atoi(tmp.substr(tmp.find(',')+1, tmp.length()).c_str());
+	}
 	Start.close();
 
 	fstream End;
@@ -95,8 +109,20 @@ int main(int argc, char* argv[])
 	else cout << "Open " << BatteryEnd << " successful.\n";
 
 	WriteToHere << "End,";
-	while(End.getline(line, sizeof(line), '\n'))	WriteToHere << line << endl;
+	while(End.getline(line, sizeof(line), '\n'))
+	{
+		WriteToHere << line << endl;
+		tmp.assign(line);
+		if(!tmp.compare(0, tmp.find(','), "Charge now")) battery_end = atoi(tmp.substr(tmp.find(',')+1, tmp.length()).c_str());
+		if(!tmp.compare(0, tmp.find(','), "Capacity")) capacity_end = atoi(tmp.substr(tmp.find(',')+1, tmp.length()).c_str());
+	}
 	End.close();
+
+	capacity_diff = capacity_start - capacity_end;
+	consumption = battery_start - battery_end;
+
+	WriteToHere << "Consumption," << capacity_diff << ',' << consumption << endl;
+
 
 	// write serial test error
 	fstream SerialTestError;
