@@ -18,12 +18,11 @@ int main(int argc, char* argv[])
 	string app_name;
 	string lock_time;
 
-	int battery_start = 0;
-	int battery_end = 0;
-	int consumption = 0;
-	int capacity_diff = 0;
-	int capacity_start = 0;
-	int capacity_end = 0;
+	int hour_current = 0;
+	int hour_pre = 0;
+	string time;
+	string level;
+
 
 //	string Date = "2014/11/17";
 //	string SerailTest_xls = "20141117_serial_test_Report.xls";
@@ -37,6 +36,15 @@ int main(int argc, char* argv[])
 	string SerailTest_txt = argv[3];
 	string BatteryStart = argv[4];
 	string BatteryEnd = argv[5];
+	string BatteryLevel = argv[6];
+
+
+	int battery_start = 0;
+	int battery_end = 0;
+	int consumption = 0;
+	int capacity_diff = 0;
+	int capacity_start = 0;
+	int capacity_end = 0;
 
 	fstream WriteToHere;
 	WriteToHere.open("DoU_AutoTest_report.txt", ios::out | ios::trunc);
@@ -85,12 +93,11 @@ int main(int argc, char* argv[])
 		book->release();
 	}
 
-
-	// write battery status
+	// write battery status at beginning
 	fstream Start;
-    Start.open(BatteryStart.c_str(), ios::in);
-    if(!Start) cout << "Open " << BatteryStart << " failed.\n";
-    else cout << "Open " << BatteryStart << " successful.\n";
+	Start.open(BatteryStart.c_str(), ios::in);
+	if(!Start) cout << "Open " << BatteryStart << " failed.\n";
+	else cout << "Open " << BatteryStart << " successful.\n";
 
 	WriteToHere << "Battery Status\n"
 				<< "Start,";
@@ -103,6 +110,7 @@ int main(int argc, char* argv[])
 	}
 	Start.close();
 
+	//write battery status in the end
 	fstream End;
 	End.open(BatteryEnd.c_str(), ios::in);
 	if(!End) cout << "Open " << BatteryEnd << " failed.\n";
@@ -122,6 +130,45 @@ int main(int argc, char* argv[])
 	consumption = battery_start - battery_end;
 
 	WriteToHere << "Consumption," << capacity_diff << ',' << consumption << endl;
+
+	// write battery status
+	WriteToHere << "Capacity Information\n";
+	fstream read;
+	read.open(BatteryLevel.c_str(), ios::in);
+	if(!read) cout << "Open" << BatteryLevel << " failed.\n";
+	else cout << "Open" << BatteryLevel << " successful.\n\n";
+
+	while(read.getline(line, sizeof(line), '\n'))
+	{
+		tmp.assign(line);
+		if(tmp.length() >= 8)
+		{
+			hour_current = atoi(tmp.substr(8, 2).c_str());
+			if(hour_current != hour_pre)
+			{
+				hour_pre = hour_current;
+				time.assign(tmp.substr(0, 12));
+				level.assign(tmp.substr(tmp.find_first_of(')'), tmp.length()));
+				level.erase(0, level.find(',') + 1 );
+				level.erase(0, level.find(',') + 1 );
+				level.erase(0, level.find(',') + 1 );
+				level.erase(0, level.find(',') + 1 );
+				level.assign(level.substr(0, level.find(',')));
+				WriteToHere << time << ',' << level << endl;
+				//write << line << endl;
+			}
+		}
+	}
+	time.assign(tmp.substr(0, 12));
+	level.assign(tmp.substr(tmp.find_first_of(')'), tmp.length()));
+	level.erase(0, level.find(',') + 1 );
+	level.erase(0, level.find(',') + 1 );
+	level.erase(0, level.find(',') + 1 );
+	level.erase(0, level.find(',') + 1 );
+	level.assign(level.substr(0, level.find(',')));
+	WriteToHere << time << ',' << level << endl;
+
+	read.close();
 
 
 	// write serial test error
@@ -147,10 +194,10 @@ int main(int argc, char* argv[])
 
 	// write abnormal power consumption
 	WriteToHere << "Abnormal power consumption\n";
-	if(argv[6])
+	if(argv[5])
 //	if(!PMLog.empty())
 	{
-		string PMLog = argv[6];
+		string PMLog = argv[5];
 		fstream log;
 		log.open(PMLog.c_str(), ios::in);
 		if(!log)	cout << "Open " << PMLog << " failed.\n";
