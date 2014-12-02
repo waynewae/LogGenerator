@@ -194,10 +194,10 @@ int main(int argc, char* argv[])
 
 	// write abnormal power consumption
 	WriteToHere << "Abnormal power consumption\n";
-	if(argv[5])
+	if(argv[7])
 //	if(!PMLog.empty())
 	{
-		string PMLog = argv[5];
+		string PMLog = argv[7];
 		fstream log;
 		log.open(PMLog.c_str(), ios::in);
 		if(!log)	cout << "Open " << PMLog << " failed.\n";
